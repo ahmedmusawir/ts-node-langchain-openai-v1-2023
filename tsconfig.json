@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "target": "ESNext", // or the highest ECMAScript version you want to target
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "skipLibCheck": true,
+    // Uncomment any of the following as needed:
+    "outDir": "./dist" // Specify an output folder for all emitted files
+    // "sourceMap": true,            // Create source map files for emitted JavaScript files
+    // "noImplicitAny": true,        // Enable error reporting for expressions with an implied 'any' type
+    // "moduleResolution": "node",   // Specify how TypeScript looks up a file from a given module specifier
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules", "dist"]
+}

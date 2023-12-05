@@ -1,0 +1,24 @@
+import { OpenAI } from 'langchain/llms/openai';
+import * as dotenv from 'dotenv';
+
+// Initialize dotenv to load environment variables
+dotenv.config();
+
+async function main() {
+  // Create a new instance of the OpenAI model
+  const model = new OpenAI({
+    temperature: 0.5,
+    // Ensure you include your API key or other necessary configuration
+  });
+
+  // Make an asynchronous call to the model
+  try {
+    const res = await model.call('What is the capital of china?');
+    console.log(res);
+  } catch (error) {
+    console.error('Error:', error);
+  }
+}
+
+// Execute the main function
+main();
