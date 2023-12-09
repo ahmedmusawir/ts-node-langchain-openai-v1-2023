@@ -17,6 +17,8 @@
     "ts-node": "^10.9.1"
   },
   "dependencies": {
+    "@upstash/redis": "^1.25.1",
+    "axios": "^1.6.2",
     "dotenv": "^16.3.1",
     "fs": "^0.0.1-security",
     "langchain": "^0.0.200"

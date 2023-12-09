@@ -1,9 +1,17 @@
 import Langchain_1 from "./modules/Langchain_1.js";
+import Langchain_Chat_1 from "./modules/Langchain_Chat_1.js";
+import Langchain_Chat_Redis from "./modules/Langchain_Chat_Redis.js";
 
-// Instantiate the class and call the main method
-const langchain = new Langchain_1();
-// langchain.main("What is the capital of spain?");
+const langchainRedis = new Langchain_Chat_Redis();
 
-// langchain.promptTemplate();
-// langchain.promptTemplateChain();
-langchain.promptAgent();
+// langchainRedis.customChatMemoryRedis("my name is moose", "I'm from malaysia");
+
+// langchainRedis.customChatMemoryRedis(
+//   "Do you know my name?",
+//   "Do you know where I am from?"
+// );
+
+// langchainRedis.customChatMemoryRedis(
+//   "Come on man, you know which city I'm from you even said it's bustling city, right?",
+//   "Can you name a few important places to visit in my city?"
+// );
