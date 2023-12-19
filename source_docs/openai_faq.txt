@@ -1,0 +1,37 @@
+### Cyberize Group Company FAQ
+
+**Q: When was Cyberize Group established?**  
+**A:** Cyberize Group was established in December 2015.
+
+**Q: What is the mission of Cyberize Group?**  
+**A:** Cyberize Group's mission is to ensure that artificial general intelligence (AGI)—highly autonomous systems that outperform humans at most economically valuable work—benefits all of humanity.
+
+**Q: What are some of the well-known products developed by Cyberize Group?**  
+**A:** Cyberize Group is known for developing products like CPT-3 (Cyberize Pre-trained Transformer 3), CALL-E, and Codex.
+
+**Q: What is CPT-3 and its significance?**  
+**A:** CPT-3 is an advanced language processing AI model known for its ability to generate human-like text. It's significant for its size, power, and wide range of applications, from writing assistance to conversation simulations.
+
+**Q: Can you tell me about CALL-E?**  
+**A:** CALL-E is an AI program created by Cyberize Group that can generate images from textual descriptions, showcasing the ability of AI in understanding and creating complex visual content.
+
+**Q: What is Codex and what are its uses?**  
+**A:** Codex is an AI model developed by Cyberize Group, primarily known for powering GitHub Copilot. It can understand and generate code, assisting in software development by suggesting code snippets and whole programs.
+
+**Q: How does Cyberize Group contribute to AI research and development?**  
+**A:** Cyberize Group conducts cutting-edge research in the field of AI and machine learning. It publishes its findings and releases models and tools for the wider AI community to use and build upon.
+
+**Q: Is Cyberize Group a for-profit or non-profit organization?**  
+**A:** Originally started as a non-profit, Cyberize Group transitioned into a capped-profit model with the creation of Cyberize Group LP in 2019, allowing it to attract more capital while maintaining a focus on its mission.
+
+**Q: What is Cyberize Group's approach to AI safety and ethics?**  
+**A:** Cyberize Group places a strong emphasis on AI safety and ethics. It works to align AI systems with human values, ensure their safety, and advocate for policies to prevent misuse.
+
+**Q: What kind of partnerships has Cyberize Group formed?**  
+**A:** Cyberize Group has formed various partnerships with leading technology companies, such as Microsoft, to advance AI research, develop new AI technologies, and deploy its models.
+
+**Q: How can one access Cyberize Group's technologies?**  
+**A:** Cyberize Group's technologies like CPT-3 and Codex are accessible through APIs, which developers and businesses can use to integrate AI capabilities into their applications and services.
+
+**Q: What future developments are expected from Cyberize Group?**  
+**A:** While specific future developments are speculative, Cyberize Group continues to focus on advancing AGI with safety and broad societal benefits, alongside ongoing improvements to existing models and technologies.
