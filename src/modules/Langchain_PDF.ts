@@ -56,6 +56,7 @@ class Langchain_PDF {
   async processPDFToVectorStore() {
     const loader = new PDFLoader("source_docs/SLG_Sales_Page.pdf", {
       parsedItemSeparator: "",
+      splitPages: false,
     });
 
     const docs = await loader.load();
@@ -66,7 +67,7 @@ class Langchain_PDF {
     });
 
     const documents = await splitter.splitDocuments(docs);
-    console.log("Split Docs", documents);
+    // console.log("Split Docs", documents);
 
     const embeddings = new OpenAIEmbeddings();
     // console.log("Embeddings:", embeddings);

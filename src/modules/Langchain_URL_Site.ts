@@ -7,8 +7,8 @@ import { FaissStore } from "langchain/vectorstores/faiss";
 import { RetrievalQAChain, loadQAStuffChain } from "langchain/chains";
 import { PuppeteerWebBaseLoader } from "langchain/document_loaders/web/puppeteer";
 import * as cheerio from "cheerio";
-import { Chroma } from "langchain/vectorstores/chroma";
-import fs from "fs";
+import { compile } from "html-to-text";
+import { RecursiveUrlLoader } from "langchain/document_loaders/web/recursive_url";
 import * as puppeteer from "puppeteer";
 import { Document } from "langchain/document";
 
@@ -21,16 +21,13 @@ dotenv.config();
  *
  * @class Langchain_1
  * @property {OpenAI} model - The instance of the OpenAI model used for all interactions.
+
 /**
  *
  *
- * @class Langchain_URL
-/**
- *
- *
- * @class Langchain_URL
+ * @class Langchain_URL_Site
  */
-class Langchain_URL {
+class Langchain_URL_Site {
   private model: OpenAI;
 
   constructor() {
@@ -68,81 +65,62 @@ class Langchain_URL {
   /**
    * Processes a Text file, Splits it, Creates Vector Embeddings, Stores in a Faiss Store
    */
-  async processURLToFaissVectorStore() {
-    const url = "https://simplifiedlocalgrowth.com/slg-1/";
+  async processSiteToFaissVectorStore() {
+    const url = "https://cyberizegroup.com/";
 
-    const loader = new PuppeteerWebBaseLoader(url, {
-      launchOptions: {
-        headless: "new",
-      },
-      async evaluate(page: puppeteer.Page, browser: puppeteer.Browser) {
-        try {
-          await page.goto(url, { waitUntil: "networkidle0" });
-          const textContent = await page.evaluate(() => {
-            // Clean up the HTML content and extract the text
-            const bodyElement = document.querySelector("body");
-            return bodyElement ? bodyElement.textContent : "";
-          });
-          await browser.close();
-          return textContent || "";
-        } catch (error) {
-          console.error("Error occurred while loading the page: ", error);
-          await browser.close();
-          return ""; // return empty string in case of an error
-        }
-      },
+    const compiledConvert = compile({ wordwrap: 130 }); // returns (text: string) => string;
+
+    const loader = new RecursiveUrlLoader(url, {
+      extractor: compiledConvert,
+      maxDepth: 5,
+      excludeDirs: [],
+      timeout: 10000,
+      preventOutside: true,
     });
 
-    const urlDocs = await loader.load();
-    const pageContent = urlDocs[0].pageContent; // Access the extracted text content
+    // const urlSiteDocs = await loader.load();
+    // console.log(urlSiteDocs);
 
-    // console.log(pageContent);
-
-    // Load the HTML content into cheerio
-    const $ = cheerio.load(pageContent);
-
-    $("script, style").remove(); // Remove unnecessary elements
-
-    // Further clean-up using regular expressions (example)
-    const cleanedText = $("body")
-      .html()
-      ?.replace(/<style[^>]*>.*<\/style>/gms, "");
-
-    // Load the cleaned HTML again to extract text
-    const cleaned$ = cheerio.load(cleanedText!);
-
-    // Extract the text from the HTML content
-    const textContent = cleaned$("body").text();
-
-    const docs = textContent.replace(/[^\x20-\x7E]+/g, ""); // Remove non-ASCII characters
+    //---------------------------------------------
+    loader
+      .load()
+      .then((urlSiteDocs) => {
+        console.log(urlSiteDocs);
+        urlSiteDocs.map((page) => {
+          console.log(page.metadata.source);
+        });
+      })
+      .catch((error) => {
+        console.error("Error loading pages:", error);
+      });
+    //---------------------------------------------
 
     // Create Document instances
-    const documents = [new Document({ pageContent: docs })];
 
     const splitter = new RecursiveCharacterTextSplitter({
       chunkSize: 200,
       chunkOverlap: 50,
     });
 
-    const splitDocuments = await splitter.splitDocuments(documents);
+    // const splitDocuments = await splitter.splitDocuments(documents);
 
     // Initialize OpenAI embeddings
     const embeddings = new OpenAIEmbeddings();
     // Process and store embeddings in batches
     const batchSize = 10; // Adjust based on your needs
-    let allDocs = [];
+    // let allDocs = [];
 
-    for (let i = 0; i < splitDocuments.length; i += batchSize) {
-      const batch = splitDocuments.slice(i, i + batchSize);
+    // for (let i = 0; i < splitDocuments.length; i += batchSize) {
+    //   const batch = splitDocuments.slice(i, i + batchSize);
 
-      // Add batch documents to allDocs array
-      allDocs.push(...batch);
-    }
+    //   // Add batch documents to allDocs array
+    //   allDocs.push(...batch);
+    // }
 
     // Load the docs into the vector store
-    const vectorStore = await FaissStore.fromDocuments(allDocs, embeddings);
+    // const vectorStore = await FaissStore.fromDocuments(allDocs, embeddings);
 
-    await vectorStore.save("./vector-store-url");
+    // await vectorStore.save("./vector-store-website");
   }
 
   /** Using a Faiss Vector Store in a Chatbot */
@@ -163,4 +141,4 @@ class Langchain_URL {
   }
 }
 
-export default Langchain_URL;
+export default Langchain_URL_Site;

@@ -12,6 +12,7 @@
   "license": "ISC",
   "type": "module",
   "devDependencies": {
+    "@types/html-to-text": "^9.0.4",
     "@types/node": "^20.10.3",
     "nodemon": "^3.0.2",
     "ts-node": "^10.9.1"
@@ -25,6 +26,8 @@
     "dotenv": "^16.3.1",
     "faiss-node": "^0.5.1",
     "fs": "^0.0.1-security",
+    "html-to-text": "^9.0.5",
+    "jsdom": "^23.0.1",
     "langchain": "^0.0.200",
     "pdf-parse": "^1.1.1",
     "pdfjs-dist": "^4.0.269",

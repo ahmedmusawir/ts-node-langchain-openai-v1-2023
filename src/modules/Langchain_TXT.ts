@@ -5,6 +5,8 @@ import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
 import { OpenAIEmbeddings } from "langchain/embeddings/openai";
 import { FaissStore } from "langchain/vectorstores/faiss";
 import { RetrievalQAChain, loadQAStuffChain } from "langchain/chains";
+import { Chroma } from "langchain/vectorstores/chroma";
+
 // Initialize dotenv to load environment variables
 dotenv.config();
 
@@ -97,6 +99,57 @@ class Langchain_TXT {
       //   query: "What is CALL-E?",
       //   query: "When was Cyberize company started?",
     });
+  }
+
+  /** Vector store with ChromaDB on Digital Ocean */
+  async processTextToChromaDB(collectionName: string) {
+    // Existing code to load and split documents
+    const loader = new TextLoader("source_docs/openai_faq.txt");
+    const docs = await loader.load();
+    const splitter = new RecursiveCharacterTextSplitter({
+      chunkSize: 200,
+      chunkOverlap: 50,
+    });
+    const documents = await splitter.splitDocuments(docs);
+
+    // Create vector store and index the docs with Chroma
+    const vectorStore = await Chroma.fromDocuments(
+      documents,
+      new OpenAIEmbeddings(),
+      {
+        collectionName: collectionName, // Replace with your collection name
+        url: "http://157.230.43.210:8000", // Your Chroma DB URL
+        collectionMetadata: {
+          "hnsw:space": "cosine",
+        },
+      }
+    );
+
+    console.log("Chroma Vector Store Created:", vectorStore);
+  }
+
+  async useChromaVectorStore(prompt: string) {
+    const embeddings = new OpenAIEmbeddings();
+    const vectorStore = await Chroma.fromExistingCollection(embeddings, {
+      collectionName: "moose-text-col-1", // Your collection name
+      url: "http://157.230.43.210:8000", // Your Chroma DB URL
+    });
+
+    const chain = new RetrievalQAChain({
+      combineDocumentsChain: loadQAStuffChain(this.model),
+      retriever: vectorStore.asRetriever(),
+      returnSourceDocuments: true,
+    });
+
+    const res = await chain.call({
+      query: prompt,
+    });
+
+    // console.log(res);
+
+    // res.sourceDocuments.forEach((doc: any) => {
+    //   console.log(doc.metadata);
+    // });
   }
 }
 
