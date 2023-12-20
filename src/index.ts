@@ -1,20 +1,17 @@
+import ChromaDB_Test from "./modules/ChromaDB_Test.js";
 import Langchain_1 from "./modules/Langchain_1.js";
+import Langchain_PDF from "./modules/Langchain_PDF.js";
 import Langchain_TXT from "./modules/Langchain_TXT.js";
 import Langchain_URL from "./modules/Langchain_URL.js";
 
 const langchain = new Langchain_URL();
 // const langchain = new Langchain_TXT();
-
 // langchain.main("My name is Moose?");
-
 // Takes a text file, Splits it, Saves in a Faiss Vector Store Locally
 // langchain.processTextToVectorStore();
-
 // Using the vector store on Cyberize faq text
 // langchain.useFaissVectorStrore();
-
 // langchain.processURLToChromaVectorStore();
-
 // langchain.processURLToFaissVectorStore();
 
 // langchain.useFaissVectorStrore("What is SLG?");
@@ -31,10 +28,31 @@ const langchain = new Langchain_URL();
 //     );
 // langchain.useFaissVectorStrore("What was Mical doing on Aug, 22nd, 1999?");
 // langchain.useFaissVectorStrore("How old was Mical on Aug, 22nd, 1999?");
-// langchain.useFaissVectorStrore("What did Mical hate?");
+// langchain.useFaissVectorStrore("Where was Mical on Aug, 22nd, 1999?");
+// langchain.useFaissVectorStrore("What are the tools I can get from SLG?");
 // langchain.useFaissVectorStrore(
 //   "What is the difference between SLG and old way of doing things?"
 // );
-// langchain.useFaissVectorStrore("What is the big idea behind SLG system?");
-// langchain.useFaissVectorStrore("What are the tools I can get from SLG?");
-// langchain.useFaissVectorStrore("When does the offer expires?");
+
+const langchainPDF = new Langchain_PDF();
+
+// langchainPDF.processPDFToVectorStore();
+
+// langchainPDF.useFaissVectorStrore("What else did Mical hate?");
+// langchainPDF.useFaissVectorStrore("What is the big idea behind SLG system?");
+// langchainPDF.useFaissVectorStrore("What are the tools I can get from SLG?");
+// langchainPDF.useFaissVectorStrore("When does the offer expires?");
+// langchainPDF.useFaissVectorStrore("Where was Mical on Aug, 22nd, 1999?");
+// langchainPDF.useFaissVectorStrore("What is SLG?");
+// langchainPDF.useFaissVectorStrore("Who does SLG works for?");
+
+const chromaDBTest = new ChromaDB_Test();
+
+// CREATE A CHROMA DB COLLECTION
+// chromaDBTest.createChromaCollection("chromaMooseCol_1");
+
+// DELETE A CHROMA DB COLLECTION
+// chromaDBTest.deleteChromaCollection("chromaMooseCol_1");
+
+// GET A LIST OF CHROMA DB COLLECTIONS
+// chromaDBTest.getChromaCollections();

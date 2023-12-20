@@ -26,6 +26,8 @@
     "faiss-node": "^0.5.1",
     "fs": "^0.0.1-security",
     "langchain": "^0.0.200",
+    "pdf-parse": "^1.1.1",
+    "pdfjs-dist": "^4.0.269",
     "puppeteer": "^19.11.1"
   }
 }
