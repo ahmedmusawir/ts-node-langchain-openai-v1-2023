@@ -1,10 +1,11 @@
 import dotenv from "dotenv";
 import { OpenAI } from "langchain/llms/openai";
+import { PDFLoader } from "langchain/document_loaders/fs/pdf";
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
 import { OpenAIEmbeddings } from "langchain/embeddings/openai";
 import { FaissStore } from "langchain/vectorstores/faiss";
 import { RetrievalQAChain, loadQAStuffChain } from "langchain/chains";
-import { PDFLoader } from "langchain/document_loaders/fs/pdf";
+import { PromptTemplate } from "langchain/prompts";
 
 // Initialize dotenv to load environment variables
 dotenv.config();
@@ -23,7 +24,8 @@ class Langchain_PDF {
     // Create a new instance of the OpenAI model
     this.model = new OpenAI({
       temperature: 0.5,
-      modelName: "gpt-3.5-turbo",
+      // modelName: "gpt-3.5-turbo",
+      modelName: "gpt-4-1106-preview",
       streaming: true,
       callbacks: [
         {
@@ -54,7 +56,7 @@ class Langchain_PDF {
    * Processes a Text file, Splits it, Creates Vector Embeddings, Stores in a Faiss Store
    */
   async processPDFToVectorStore() {
-    const loader = new PDFLoader("source_docs/SLG_Sales_Page.pdf", {
+    const loader = new PDFLoader("source_docs/CV_Moose.pdf", {
       parsedItemSeparator: "",
       splitPages: false,
     });
@@ -74,6 +76,8 @@ class Langchain_PDF {
 
     const vectorstore = await FaissStore.fromDocuments(documents, embeddings);
     await vectorstore.save("./vector-store-pdf");
+
+    console.log("PDF to Faiss Vector Store Created successfully");
   }
 
   /** Using a Faiss Vector Store in a Chatbot */
@@ -81,8 +85,24 @@ class Langchain_PDF {
     const embeddings = new OpenAIEmbeddings();
     const vectorStore = await FaissStore.load("./vector-store-pdf", embeddings);
 
+    /** Using Prompt Templating */
+    const template = `The given context is Ahmed's resume. Use the following pieces of context to answer the question at the end. When answering.  
+    If you don't know the answer, just say that you don't know, don't try to make up an answer. Use three sentences maximum and keep the answer as concise as possible. Also, you MUST provide the {question} in all uppercase format at the top of every answer. Always say "thanks for asking!" at the end of the answer. 
+    {context} 
+    Question: {question}
+    Must Display the Question in full: {question}
+    Answer only here (MUST be in all lowercase letters. You MUST use person's name found in the context to replace he/she every time (example: Ahmed did ..., Ahmed studied ... etc. If the answer contains a list of things (for example: what did he do? what does he know? etc.) You MUST answer in List Format. You MUST NOT answer out of {context}. If asked out of {context} questions just say I don't know.): `;
+
+    const QA_CHAIN_PROMPT = new PromptTemplate({
+      inputVariables: ["context", "question"],
+      template,
+    });
+
+    /** Getting answers via Q/A from the vector store */
     const chain = new RetrievalQAChain({
-      combineDocumentsChain: loadQAStuffChain(this.model),
+      combineDocumentsChain: loadQAStuffChain(this.model, {
+        prompt: QA_CHAIN_PROMPT,
+      }),
       retriever: vectorStore.asRetriever(),
       returnSourceDocuments: true,
     });

@@ -20,10 +20,6 @@ dotenv.config();
  *
  *
  * @class Langchain_TXT
-/**
- *
- *
- * @class Langchain_TXT
  */
 class Langchain_TXT {
   private model: OpenAI;
@@ -45,21 +41,6 @@ class Langchain_TXT {
   }
 
   /**
-   * Makes an asynchronous call to the OpenAI model with a given prompt.
-   * Logs the response or error to the console.
-   *
-   * @param {string} prompt - The prompt to be sent to the OpenAI model.
-   */
-  async main(prompt: string) {
-    // Make an asynchronous call to the model
-    try {
-      const res = await this.model.call(prompt);
-      //   console.log(res);
-    } catch (error) {
-      console.error("Error:", error);
-    }
-  }
-  /**
    * Processes a Text file, Splits it, Creates Vector Embeddings, Stores in a Faiss Store
    */
   async processTextToVectorStore() {
@@ -80,11 +61,13 @@ class Langchain_TXT {
     // console.log("Embeddings:", embeddings);
 
     const vectorstore = await FaissStore.fromDocuments(documents, embeddings);
-    await vectorstore.save("./vector-store");
+    await vectorstore.save("./vector-store-txt");
+
+    console.log("Faiss Vector Store Created Successfully!");
   }
 
   /** Using a Faiss Vector Store in a Chatbot */
-  async useFaissVectorStrore() {
+  async useFaissVectorStrore(question: string) {
     const embeddings = new OpenAIEmbeddings();
     const vectorStore = await FaissStore.load("./vector-store-txt", embeddings);
 
@@ -92,13 +75,14 @@ class Langchain_TXT {
       combineDocumentsChain: loadQAStuffChain(this.model),
       retriever: vectorStore.asRetriever(),
       returnSourceDocuments: true,
+      verbose: true,
     });
 
     const res = await chain.call({
-      query: "What are the products of cyberize?",
-      //   query: "What is CALL-E?",
-      //   query: "When was Cyberize company started?",
+      query: question,
     });
+
+    console.log("THE ANSWER:", res.text);
   }
 
   /** Vector store with ChromaDB on Digital Ocean */
@@ -128,10 +112,11 @@ class Langchain_TXT {
     console.log("Chroma Vector Store Created:", vectorStore);
   }
 
+  /** Using a ChromaDB Vector Store in a Chatbot */
   async useChromaVectorStore(prompt: string) {
     const embeddings = new OpenAIEmbeddings();
     const vectorStore = await Chroma.fromExistingCollection(embeddings, {
-      collectionName: "moose-text-col-1", // Your collection name
+      collectionName: "moose-txt-youtube", // Your collection name
       url: "http://157.230.43.210:8000", // Your Chroma DB URL
     });
 

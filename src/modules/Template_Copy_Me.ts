@@ -15,21 +15,13 @@ class Template_Copy_Me {
     // Create a new instance of the OpenAI model
     this.model = new ChatOpenAI({
       temperature: 0.5,
-      // temperature: 0, // for maths or code
       modelName: "gpt-3.5-turbo",
-      streaming: true,
-      callbacks: [
-        {
-          handleLLMNewToken(token) {
-            process.stdout.write(token);
-          },
-        },
-      ],
     });
   }
 
   async main() {
     // main function code
+    console.log("We Are Good To Go 2025...!!");
   }
 
   async sampleFunction(prompt1: string, prompt2: string) {

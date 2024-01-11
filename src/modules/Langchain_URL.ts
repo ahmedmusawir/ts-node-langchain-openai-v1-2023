@@ -1,16 +1,18 @@
 import dotenv from "dotenv";
 import { OpenAI } from "langchain/llms/openai";
-import { TextLoader } from "langchain/document_loaders/fs/text";
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
 import { OpenAIEmbeddings } from "langchain/embeddings/openai";
 import { FaissStore } from "langchain/vectorstores/faiss";
-import { RetrievalQAChain, loadQAStuffChain } from "langchain/chains";
+import {
+  ConversationalRetrievalQAChain,
+  RetrievalQAChain,
+  loadQAStuffChain,
+} from "langchain/chains";
 import { PuppeteerWebBaseLoader } from "langchain/document_loaders/web/puppeteer";
 import * as cheerio from "cheerio";
-import { Chroma } from "langchain/vectorstores/chroma";
-import fs from "fs";
 import * as puppeteer from "puppeteer";
 import { Document } from "langchain/document";
+import { BufferMemory } from "langchain/memory";
 
 // Initialize dotenv to load environment variables
 dotenv.config();
@@ -21,10 +23,7 @@ dotenv.config();
  *
  * @class Langchain_1
  * @property {OpenAI} model - The instance of the OpenAI model used for all interactions.
-/**
- *
- *
- * @class Langchain_URL
+
 /**
  *
  *
@@ -37,8 +36,8 @@ class Langchain_URL {
     // Create a new instance of the OpenAI model
     this.model = new OpenAI({
       temperature: 0.5,
-      // modelName: "text-embedding-ada-002",
-      modelName: "gpt-3.5-turbo",
+      // modelName: "gpt-3.5-turbo",
+      modelName: "gpt-4-1106-preview",
       streaming: true,
       callbacks: [
         {
@@ -71,6 +70,8 @@ class Langchain_URL {
   async processURLToFaissVectorStore() {
     const url = "https://simplifiedlocalgrowth.com/slg-1/";
 
+    console.log("Making the call to:", url);
+
     const loader = new PuppeteerWebBaseLoader(url, {
       launchOptions: {
         headless: "new",
@@ -93,6 +94,8 @@ class Langchain_URL {
       },
     });
 
+    console.log("Loading URL to Docs");
+
     const urlDocs = await loader.load();
     const pageContent = urlDocs[0].pageContent; // Access the extracted text content
 
@@ -114,7 +117,11 @@ class Langchain_URL {
     // Extract the text from the HTML content
     const textContent = cleaned$("body").text();
 
+    // console.log(textContent);
+
     const docs = textContent.replace(/[^\x20-\x7E]+/g, ""); // Remove non-ASCII characters
+
+    // console.log(docs);
 
     // Create Document instances
     const documents = [new Document({ pageContent: docs })];
@@ -125,6 +132,8 @@ class Langchain_URL {
     });
 
     const splitDocuments = await splitter.splitDocuments(documents);
+
+    console.log(splitDocuments);
 
     // Initialize OpenAI embeddings
     const embeddings = new OpenAIEmbeddings();
@@ -143,6 +152,8 @@ class Langchain_URL {
     const vectorStore = await FaissStore.fromDocuments(allDocs, embeddings);
 
     await vectorStore.save("./vector-store-url");
+
+    console.log("Faiss Vector store created successfully!");
   }
 
   /** Using a Faiss Vector Store in a Chatbot */
@@ -158,9 +169,38 @@ class Langchain_URL {
 
     const res = await chain.call({
       query: prompt,
-      //   query: "What is CALL-E?",
     });
   }
-}
 
+  /** Using a Faiss Vector Store in a Chatbot */
+
+  async useFaissVectorStoreWithMemory(prompt: string) {
+    // Load your existing Faiss vector store
+    const embeddings = new OpenAIEmbeddings();
+    const vectorStore = await FaissStore.load("./vector-store-url", embeddings);
+
+    // Initialize chat memory
+    const memory = new BufferMemory({
+      memoryKey: "chat_history",
+    });
+
+    // Create a Conversational Retrieval QA Chain with memory and custom question generator options
+    const chain = new ConversationalRetrievalQAChain({
+      combineDocumentsChain: loadQAStuffChain(this.model),
+      retriever: vectorStore.asRetriever(),
+      memory: memory,
+      questionGeneratorChain: {
+        prompt: "Generate a question based on the given context.",
+        llm: this.model,
+      },
+      returnSourceDocuments: true,
+    });
+    // Call the chain with your query
+    const res = await chain.call({
+      query: prompt,
+    });
+
+    console.log(res);
+  }
+}
 export default Langchain_URL;

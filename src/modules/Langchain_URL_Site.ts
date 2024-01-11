@@ -35,7 +35,7 @@ class Langchain_URL_Site {
     this.model = new OpenAI({
       temperature: 0.5,
       // modelName: "text-embedding-ada-002",
-      modelName: "gpt-3.5-turbo",
+      modelName: "gpt-4-1106-preview",
       streaming: true,
       callbacks: [
         {
